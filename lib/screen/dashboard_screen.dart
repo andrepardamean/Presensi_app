@@ -6,7 +6,7 @@ import 'package:cashy_app/screen/riwayat_absen.dart';
 import 'package:cashy_app/utils/mix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';  
+import 'dart:convert';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -17,7 +17,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   String nik = "", token = "", name = "", dept = "", imgUrl = "";
-  late Future<Presensi> futurePresensi;
+  bool isMasuk = true;
 
   //get user data
   Future<void> getUserData() async {
@@ -60,10 +60,76 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+  // Metode untuk menyimpan status check-in/check-out
+  Future<void> saveStatusMasuk() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isMasuk', isMasuk);
+  }
+
+  // Metode untuk memuat status check-in/check-out
+  Future<void> loadStatusMasuk() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isMasuk = prefs.getBool('isMasuk') ?? true;
+    });
+  }
+
+  Future<void> recordAttendance() async {
+    //tutup showbottomsheet
+    Navigator.pop(context);
+    //end point
+    const String endpointMasuk = 'https://presensi.spilme.id/entry';
+    const String endpointKeluar = 'https://presensi.spilme.id/exit';
+
+    final endpoint = isMasuk ? endpointMasuk : endpointKeluar;
+    final requestBody = isMasuk
+        ? {
+            'nik': nik,
+            'tanggal': getTodayDate(),
+            'jam_masuk': getTime(),
+            'lokasi_masuk': 'polbeng',
+          }
+        : {
+            'nik': nik,
+            'tanggal': getTodayDate(),
+            'jam_keluar': getTime(),
+            'lokasi_keluar': 'polbeng',
+          };
+
+    final response = await http.post(
+      Uri.parse(endpoint),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode == 200) {
+      final responseBody = jsonDecode(response.body);
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(responseBody['message'])),
+      );
+      setState(() {
+        isMasuk = !isMasuk;
+        saveStatusMasuk(); // simpan status absensi
+      });
+      //refresh informasi absensi
+      fetchPresensi(nik, getTodayDate());
+    } else {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to record attendance')),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     getUserData();
+    loadStatusMasuk();
   }
 
   @override
@@ -78,7 +144,6 @@ class _DashboardState extends State<Dashboard> {
             const SizedBox(
               height: 24,
             ),
-            //Greetings
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -86,7 +151,7 @@ class _DashboardState extends State<Dashboard> {
                   ClipRRect(
                       borderRadius: BorderRadius.circular(50),
                       child:
-                          Image.network(imgUrl, height: 84, fit: BoxFit.cover)),
+                          Image.network(imgUrl, height: 60, fit: BoxFit.cover)),
                   const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,6 +205,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ],
             ),
+            const SizedBox(height: 10,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -187,9 +253,8 @@ class _DashboardState extends State<Dashboard> {
                           shape: RoundedRectangleBorder(
                             side: const BorderSide(
                                 color: Color.fromARGB(255, 219, 226, 228),
-                                width: 1.0), // Gray border for the Card
-                            borderRadius:
-                                BorderRadius.circular(10.0), // Rounded corners
+                                width: 1.0),
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
                           color: Colors.white,
                           child: Padding(
@@ -209,7 +274,7 @@ class _DashboardState extends State<Dashboard> {
                                           borderRadius:
                                               BorderRadius.circular(10)),
                                       child: SvgPicture.asset(
-                                          'assets/svgs/login_outlined.svg'),
+                                          'assets/svgs/login.svg'),
                                     ),
                                     const SizedBox(
                                       width: 10,
@@ -274,7 +339,7 @@ class _DashboardState extends State<Dashboard> {
                                           borderRadius:
                                               BorderRadius.circular(10)),
                                       child: SvgPicture.asset(
-                                        'assets/svgs/logout_outlined.svg',
+                                        'assets/svgs/logout.svg',
                                       ),
                                     ),
                                     const SizedBox(
@@ -349,7 +414,7 @@ class _DashboardState extends State<Dashboard> {
                   const SizedBox(width: 8),
                   SizedBox(width: 5),
                   Text(
-                    "Tekan untuk Presensi Keluar",
+                    'Tekan untuk presensi ${isMasuk ? 'masuk' : 'pulang'}',
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -565,7 +630,7 @@ class _DashboardState extends State<Dashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Presensi Masuk',
+            Text('Presensi ${isMasuk ? 'Masuk' : 'Pulang'}',
                 style: GoogleFonts.manrope(
                   fontSize: 24,
                   color: Colors.black,
@@ -587,13 +652,13 @@ class _DashboardState extends State<Dashboard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Tanggal Masuk',
+                    Text('Tanggal ${isMasuk ? 'Masuk' : 'Pulang'}',
                         style: GoogleFonts.manrope(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: const Color(0xff111111),
                         )),
-                    Text('Selasa, 23 Agustus 2023',
+                    Text(getToday(),
                         style: GoogleFonts.manrope(
                           fontSize: 14,
                           color: const Color(0xff707070),
@@ -618,13 +683,13 @@ class _DashboardState extends State<Dashboard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Jam Masuk',
+                    Text('Jam ${isMasuk ? 'Masuk' : 'Pulang'}',
                         style: GoogleFonts.manrope(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: const Color(0xff111111),
                         )),
-                    Text('07:30:23',
+                    Text(getTime(),
                         style: GoogleFonts.manrope(
                           fontSize: 14,
                           color: const Color(0xff707070),
@@ -662,16 +727,14 @@ class _DashboardState extends State<Dashboard> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                // Implement your check-in logic
-              },
+              onPressed: recordAttendance,
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
               ),
               child: Text(
-                'Hadir',
+                'Simpan',
                 style: GoogleFonts.manrope(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

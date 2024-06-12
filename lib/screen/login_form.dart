@@ -6,19 +6,20 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  State<LoginScreen> createState() {
-    return _LoginScreen();
+  State<Login> createState() {
+    return _Login();
   }
 }
 
-class _LoginScreen extends State<LoginScreen> {
+class _Login extends State<Login> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _obscureText = true; // Tambahkan variabel ini
 
   Future<void> _login() async {
     final username = _usernameController.text;
@@ -36,8 +37,7 @@ class _LoginScreen extends State<LoginScreen> {
       _isLoading = true;
     });
 
-    const url =
-        'https://presensi.spilme.id/login'; // Replace with your server address
+    const url = 'https://presensi.spilme.id/login';
     final response = await http.post(
       Uri.parse(url),
       headers: {
@@ -66,13 +66,11 @@ class _LoginScreen extends State<LoginScreen> {
       await prefs.setString('imgProfil', imgUrl);
       await prefs.setString('nik', nik);
 
-      // ignore: use_build_context_synchronously
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const Dashboard()),
         (route) => false,
       );
     } else {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invalid username or password')),
       );
@@ -83,12 +81,18 @@ class _LoginScreen extends State<LoginScreen> {
     });
   }
 
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-            child: SingleChildScrollView(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
@@ -150,28 +154,32 @@ class _LoginScreen extends State<LoginScreen> {
                           borderSide: BorderSide(color: Color(0xFF12A3DA)),
                         ),
                       ),
-                      //keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 24),
-                    // Password TextField
                     TextField(
                       controller: _passwordController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Password',
-                        enabledBorder: OutlineInputBorder(
+                        enabledBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           borderSide: BorderSide(color: Color(0xFF12A3DA)),
                         ),
-                        focusedBorder: OutlineInputBorder(
+                        focusedBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           borderSide: BorderSide(color: Color(0xFF12A3DA)),
                         ),
-                        suffixIcon: Icon(Icons.visibility_off),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: _togglePasswordVisibility,
+                        ),
                       ),
-                      obscureText: true,
+                      obscureText: _obscureText,
                     ),
                     const SizedBox(height: 8),
-                    //forgot password
                     GestureDetector(
                       onTap: () {
                         if (kDebugMode) {
@@ -190,10 +198,8 @@ class _LoginScreen extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Login Button
                     _isLoading
                         ? const CircularProgressIndicator()
-                        // Login Button
                         : ElevatedButton(
                             onPressed: _login,
                             style: ElevatedButton.styleFrom(
@@ -220,9 +226,7 @@ class _LoginScreen extends State<LoginScreen> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {
-                        // Fingerprint Tap
-                      },
+                      onPressed: () {},
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -230,12 +234,9 @@ class _LoginScreen extends State<LoginScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 30),
-                    // Register New Account
+                    const SizedBox(height: 20),
                     GestureDetector(
-                      onTap: () {
-                        // Register Tap
-                      },
+                      onTap: () {},
                       child: RichText(
                         text: TextSpan(
                           style: GoogleFonts.manrope(
@@ -260,6 +261,8 @@ class _LoginScreen extends State<LoginScreen> {
               )
             ],
           ),
-        )));
+        ),
+      ),
+    );
   }
 }

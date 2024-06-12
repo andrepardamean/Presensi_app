@@ -7,11 +7,11 @@ class RiwayatAbsen extends StatefulWidget {
 
   @override
   State<RiwayatAbsen> createState() {
-    return _AttandanceRecapSreenApp();
+    return riwayatabsen();
   }
 }
 
-class _AttandanceRecapSreenApp extends State<RiwayatAbsen> {
+class riwayatabsen extends State<RiwayatAbsen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cashy_app/screen/splash_screen.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+Future<void> main() async {
+  await initializeDateFormatting('id', null);
   runApp(const MyApp());
 }
 
