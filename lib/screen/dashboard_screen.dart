@@ -7,6 +7,7 @@ import 'package:cashy_app/utils/mix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:cashy_app/screen/log_activity_screen/logs_home_screen.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -205,7 +206,9 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ],
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -427,195 +430,170 @@ class _DashboardState extends State<Dashboard> {
               height: 10,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Container(
-                  width: 150,
-                  height: 190,
-                  decoration: BoxDecoration(
+              children: [
+                Expanded(
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.black,
-                          Colors.grey,
-                          Colors.grey,
-                          Colors.grey,
-                          Colors.black,
-                        ],
-                      )),
-                  child: Padding(
-                    padding: EdgeInsets.all(13.0),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
+                    ),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/images/bg_izin.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Text(
-                              "Izin Absen",
-                              style: TextStyle(
-                                  fontSize: 18,
+                              'Izin Absen',
+                              style: GoogleFonts.manrope(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'Isi form untuk mengajukan izin absensi',
+                              style: GoogleFonts.manrope(
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: const Color(0xff313638),
+                                  minimumSize: const Size(double.infinity, 50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  )),
+                              child: Text(
+                                'Ajukan izin',
+                                style: GoogleFonts.manrope(
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    "Isi form untuk meminta izin absen",
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.white),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: 50,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              width: 120,
-                              child: Column(
-                                children: <Widget>[
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 10),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                    ),
-                                    onPressed: () {},
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text(
-                                          "Ajukan Izin",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-                Container(
-                  width: 150,
-                  height: 190,
-                  decoration: BoxDecoration(
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.purple,
-                          Colors.purpleAccent,
-                          Colors.purpleAccent,
-                          Colors.purpleAccent,
-                          Colors.purple,
-                        ],
-                      )),
-                  child: Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
+                    ),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/images/bg_cuti.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Text(
-                              "Ajukan Cuti",
-                              style: TextStyle(
-                                  fontSize: 18,
+                              'Izin Cuti',
+                              style: GoogleFonts.manrope(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'Isi form untuk mengajukan cuti',
+                              style: GoogleFonts.manrope(
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 40),
+                            ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: const Color(0xff9B59B6),
+                                  minimumSize: const Size(double.infinity, 50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  )),
+                              child: Text(
+                                'Ajukan Cuti',
+                                style: GoogleFonts.manrope(
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    "Isi form untuk mengajukan cuti",
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.white),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: 50,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              width: 120,
-                              child: Column(
-                                children: <Widget>[
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 10),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                    ),
-                                    onPressed: () {},
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text(
-                                          "Ajukan Cuti",
-                                          style: TextStyle(
-                                              color: Colors.purple,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        LogsActivityScreen(nik: nik, token: token),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                  minimumSize:
+                      const Size(double.infinity, 50), // width and height
+                  backgroundColor: const Color(0xFF12A3DA),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  )),
+              child: Row(
+                mainAxisSize: MainAxisSize
+                    .min, // Use min to prevent the Row from expanding
+                children: [
+                  const Icon(
+                    Icons
+                        .note_add_outlined, // This is the icon you want before the text
+                    color: Colors.white, // Icon color
+                    size: 24.0, // Icon size
+                  ),
+                  const SizedBox(width: 8), // Spacing between icon and text
+                  Text(
+                    'Isi Log Aktifitas',
+                    style: GoogleFonts.manrope(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
